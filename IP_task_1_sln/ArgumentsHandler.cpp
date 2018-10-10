@@ -15,7 +15,12 @@ ArgumentsHandler::~ArgumentsHandler()
 
 bool ArgumentsHandler::optionIsValid(string option)
 {
-	return find(begin(argumentOptions), end(argumentOptions), option) != end(argumentOptions);
+	return find(begin(options), end(options), option) != end(options);
+}
+
+bool ArgumentsHandler::optionRequiresValue(string option)
+{
+	return option == "--brightness" || option == "--contrast";
 }
 
 bool ArgumentsHandler::valueIsValid(string value)
@@ -46,43 +51,78 @@ void ArgumentsHandler::validateArguments()
 	case 2:
 		option = argv[1];
 
-		if (!optionIsValid(option))
-		{
-			cout << errorMessageInvalidOption << endl;
-		}
-		else if (option == "--help")
+		if (option == "--help")
 		{
 			cout << helpMessage << endl;
 		}
 		else
 		{
-			cout << errorMessageOptionNeedsAValue << endl;
+			cout << errorMessageInvalidArguments << endl;
 		}
 
 		break;
-
 	case 3:
-		option = argv[1];
+		imageName = argv[1];
+		option = argv[2];
 
-		if (!optionIsValid(option))
+		if (optionIsValid(option))
+		{
+			if (optionRequiresValue(option))
+			{
+				cout << errorMessageOptionNeedsAValue << endl;
+			}
+			else
+			{
+				argumentsAreValid = true;
+				break;
+			}
+		}
+		else
 		{
 			cout << errorMessageInvalidOption << endl;
-			break;
 		}
-
-		value = argv[2];
-
-		if (!valueIsValid(value))
-		{
-			cout << errorMessageInvalidValue << endl;
-			break;
-		}
-
-		argumentsAreValid = true;
 		break;
-
+	case 4:
+		imageName = argv[1];
+		option = argv[2];
+		value = argv[3];
+		if (optionIsValid(option))
+		{
+			if (!optionRequiresValue(option))
+			{
+				cout << errorMessageInvalidNumberOfArguments << endl;
+			}
+			else if (!valueIsValid(value))
+			{
+				cout << errorMessageInvalidValue << endl;
+			}
+			else
+			{
+				argumentsAreValid = true;
+				break;
+			}
+		}
+		else
+		{
+			cout << errorMessageInvalidOption << endl;
+		}
+		break;
 	default:
 		cout << errorMessageInvalidNumberOfArguments << endl;
 		break;
 	}
+}
+
+string ArgumentsHandler::get_option() const
+{
+	return option;
+}
+
+string ArgumentsHandler::get_value() const
+{
+	return value;
+}
+string ArgumentsHandler::get_imageName() const
+{
+	return imageName;
 }
