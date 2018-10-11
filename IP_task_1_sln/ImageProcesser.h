@@ -11,6 +11,6 @@ public:
 	ImageProcesser();
 	~ImageProcesser();
 
-	void processImage(string imageName, std::string option, std::string value = "");
+	void processImage(std::string imageName, std::string option, std::string value);
 };
 
