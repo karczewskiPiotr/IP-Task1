@@ -13,14 +13,7 @@ private:
 	std::string value;
 	std::string imageName;
 
-	std::string options[17] = { "--brightness", "--contrast", "--help", "--negative", "--hflip", "--vflip", "--dflip", "--shrink", "--enlarge", "--min", "--max", "--media", "--mse", "--pmse", "--snr", "--psnr", "--md" };
-
-	std::string errorMessageInvalidNumberOfArguments = "Invalid number of arguments. Please use --help to see the possible arguments.";
-	std::string errorMessageInvalidOption = "Invalid option. Please use --help to see the possible arguments.";
-	std::string errorMessageInvalidArguments = "Invalid arguments. Please use --help to see the possible arguments.";
-	std::string errorMessageInvalidValue = "Invalid value. Please use --help to see the possible arguments.";
-	std::string errorMessageOptionNeedsAValue = "Option needs a value. Please use --help to see the possible arguments.";
-	std::string helpMessage = "sam se pomusz jak ci zara no wlasnie";
+	std::string options[17] { "--brightness", "--contrast", "--help", "--negative", "--hflip", "--vflip", "--dflip", "--shrink", "--enlarge", "--min", "--max", "--media", "--mse", "--pmse", "--snr", "--psnr", "--md" };
 
 	bool optionIsValid(std::string option);
 	bool optionRequiresValue(std::string option);
@@ -32,6 +25,7 @@ public:
 
 	bool argumentsAreValid = false;
 
+	void helpMessage();
 	void printArguments();
 	void validateArguments();
 

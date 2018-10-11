@@ -153,11 +153,13 @@
   <ItemGroup>
     <ClInclude Include="ArgumentsHandler.h" />
     <ClInclude Include="CImg.h" />
+    <ClInclude Include="Error.h" />
     <ClInclude Include="ImageProcesser.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ArgumentsHandler.cpp" />
+    <ClCompile Include="Error.cpp" />
     <ClCompile Include="ImageProcesser.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
