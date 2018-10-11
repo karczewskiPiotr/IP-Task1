@@ -70,7 +70,7 @@ void ArgumentsHandler::printArguments()
 
 void ArgumentsHandler::validateArguments()
 {
-	//Definition of type beeing a pointer to a function within class Error
+	//Definition of type beeing a pointer to a void function within class Error
 	typedef void (Error::*Error_fnc_ptr)();
 
 	Error error;
