@@ -153,10 +153,12 @@
   <ItemGroup>
     <ClInclude Include="ArgumentsHandler.h" />
     <ClInclude Include="CImg.h" />
+    <ClInclude Include="ImageProcesser.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ArgumentsHandler.cpp" />
+    <ClCompile Include="ImageProcesser.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
