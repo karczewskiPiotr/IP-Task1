@@ -26,7 +26,6 @@ public:
 	bool argumentsAreValid = false;
 
 	void helpMessage();
-	void printArguments();
 	void validateArguments();
 
 	std::string get_imageName() const;

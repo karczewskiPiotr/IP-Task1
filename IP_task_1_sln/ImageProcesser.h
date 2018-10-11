@@ -5,12 +5,16 @@
 class ImageProcesser
 {
 private:
+	const char* imageName;
+	std::string option;
+	int value;
+	
 	void changeBrightness();
 	//other methods
 public:
-	ImageProcesser();
+	ImageProcesser(std::string imageName, std::string option, std::string value);
 	~ImageProcesser();
 
-	void processImage(std::string imageName, std::string option, std::string value);
+	void processImage();
 };
 

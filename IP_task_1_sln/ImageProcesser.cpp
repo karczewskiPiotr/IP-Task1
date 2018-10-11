@@ -4,7 +4,12 @@
 using namespace cimg_library;
 using namespace std;
 
-ImageProcesser::ImageProcesser()
+void ImageProcesser::changeBrightness()
+{
+}
+
+ImageProcesser::ImageProcesser(std::string imageName, std::string option, std::string value = "")
+	:imageName(imageName.c_str()), option(option), value(stoi(value))
 {
 }
 
@@ -12,6 +17,6 @@ ImageProcesser::~ImageProcesser()
 {
 }
 
-void ImageProcesser::processImage(string imageName, string option, string value = "")
+void ImageProcesser::processImage()
 {
 };
