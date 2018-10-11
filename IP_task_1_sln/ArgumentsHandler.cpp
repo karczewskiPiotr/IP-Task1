@@ -59,15 +59,6 @@ Available commands:
 	--md - Maximum difference)";
 }
 
-void ArgumentsHandler::printArguments()
-{
-	cout << "argc = " << argc << endl;
-	for (int i = 0; i < argc; i++)
-	{
-		cout << argv[i] << endl;
-	}
-}
-
 void ArgumentsHandler::validateArguments()
 {
 	//Definition of type beeing a pointer to a void function within class Error
@@ -82,7 +73,7 @@ void ArgumentsHandler::validateArguments()
 
 		try
 		{
-			option == "--help" ? helpMessage() : throw error.invalidNumberOfArguments;
+			option == "--help" ? helpMessage() : throw error.invalidArguments;
 		}
 		catch (Error_fnc_ptr exception)
 		{
