@@ -37,7 +37,26 @@ bool ArgumentsHandler::valueIsValid(string value)
 
 void ArgumentsHandler::helpMessage()
 {
-	std::cout << "sam se pomusz jak Ci zara no wlasnie";
+	//R"()" allows to print text exactly like u see it
+	std::cout << R"(Command line format:
+	name --command [-argument=value [...]]
+Available commands:
+	--brightness - Image brightness modification
+	--contrast - Image contrast modification
+	--negative - Negative
+	--hflip - Horizontal flip
+	--vflip - Vertical flip
+	--dflip - Diagonal flip
+	--shrink - Image shrinking
+	--enlarge - Image enlargement
+	--min - Min filter
+	--max - Max filter
+	--median - Median filter
+	--mse - Mean square
+	--pmse - Peak mean square
+	--snr - Signal to noise ratio
+	--psnr - Peak signal to noise ratio
+	--md - Maximum difference)";
 }
 
 void ArgumentsHandler::printArguments()
