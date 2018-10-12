@@ -13,6 +13,15 @@ ArgumentsHandler::~ArgumentsHandler()
 {
 }
 
+int ArgumentsHandler::convertToInt(std::string option)
+{
+	for (int i = 0; i < 17; i++)
+	{
+		if (options[i] == option) return i + 1;
+	}
+	return 0;
+}
+
 bool ArgumentsHandler::optionIsValid(string option)
 {
 	return find(begin(options), end(options), option) != end(options);

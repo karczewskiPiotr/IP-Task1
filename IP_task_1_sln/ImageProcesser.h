@@ -6,8 +6,13 @@
 class ImageProcesser
 {
 private:
+	enum options
+	{
+		brightness = 1, contrast, negative = 4, hflip, vflip, dflip, shrink, enlarge, min, max, media, mse, pmse, snr, psnr, md
+	};
+
 	std::string imageName;
-	std::string option;
+	int option;
 	int value;
 
 	std::string errorMessageWrongFilename = "Image could not be loaded. Please check whether the filename is correct.";
@@ -15,7 +20,7 @@ private:
 	void changeBrightness();
 	//other methods
 public:
-	ImageProcesser(std::string imageName, std::string option, int value);
+	ImageProcesser(std::string imageName, int option, int value);
 	~ImageProcesser();
 
 	void processImage();

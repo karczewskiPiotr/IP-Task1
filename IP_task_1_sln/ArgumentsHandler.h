@@ -25,6 +25,8 @@ public:
 
 	bool argumentsAreValid = false;
 
+	int convertToInt(std::string option);
+
 	void helpMessage();
 	void validateArguments();
 
