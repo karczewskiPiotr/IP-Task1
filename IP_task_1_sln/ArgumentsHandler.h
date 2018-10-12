@@ -13,7 +13,7 @@ private:
 	std::string value;
 	std::string imageName;
 
-	std::string options[17] { "--brightness", "--contrast", "--help", "--negative", "--hflip", "--vflip", "--dflip", "--shrink", "--enlarge", "--min", "--max", "--media", "--mse", "--pmse", "--snr", "--psnr", "--md" };
+	std::string options[17] {  "--help", "--brightness", "--contrast", "--negative", "--hflip", "--vflip", "--dflip", "--shrink", "--enlarge", "--min", "--max", "--media", "--mse", "--pmse", "--snr", "--psnr", "--md" };
 
 	bool optionIsValid(std::string option);
 	bool optionRequiresValue(std::string option);
