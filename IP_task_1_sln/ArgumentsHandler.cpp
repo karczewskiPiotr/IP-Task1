@@ -86,7 +86,7 @@ void ArgumentsHandler::validateArguments()
 
 		try
 		{
-			if (optionIsValid(option))
+			if (optionIsValid(option) && option != "--help")
 			{
 				argumentsAreValid = optionRequiresValue(option) ? throw error.optionNeedsValue : true;
 			}
@@ -105,7 +105,7 @@ void ArgumentsHandler::validateArguments()
 		try
 		{
 
-			if (optionIsValid(option))
+			if (optionIsValid(option) && option != "--help")
 			{
 				if (!optionRequiresValue(option)) { throw error.invalidNumberOfArguments; }
 				else if (!valueIsValid(value)) { throw error.invalidValue; }
@@ -126,17 +126,17 @@ void ArgumentsHandler::validateArguments()
 	}
 }
 
+string ArgumentsHandler::get_imageName() const
+{
+	return imageName;
+}
+
 string ArgumentsHandler::get_option() const
 {
 	return option;
 }
 
-string ArgumentsHandler::get_value() const
+unsigned int ArgumentsHandler::get_value() const
 {
-	return value;
-}
-
-string ArgumentsHandler::get_imageName() const
-{
-	return imageName;
+	return value.length() > 0 ? stoi(value) : 0;
 }

@@ -30,5 +30,5 @@ public:
 
 	std::string get_imageName() const;
 	std::string get_option() const;
-	std::string get_value() const;
+	unsigned int get_value() const;
 };
