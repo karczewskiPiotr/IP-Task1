@@ -23,7 +23,12 @@ private:
 
 	void swapPixelsRGBValues(unsigned int x_1, unsigned int y_1, unsigned int x_2, unsigned int y_2);
 
-	void changeBrightness();
+	int truncate(int value);
+
+	void changeBrightness(int modifier);
+	void changeToNegative();
+	void changeContrast(int modifier);
+	void enlargeImage(double modifier);
 	void horizontalFlip();
 	void verticalFlip();
 	void diagonalFlip();
