@@ -12,7 +12,7 @@ ImageProcesser::ImageProcesser(std::string imageName, int option, int value)
 ImageProcesser::~ImageProcesser()
 {
 }
-
+#pragma region HelperFunctions
 void ImageProcesser::swapPixelsRGBValues(unsigned int x_1, unsigned int y_1, unsigned int x_2, unsigned int y_2)
 {
 	unsigned char temp;
@@ -24,6 +24,51 @@ void ImageProcesser::swapPixelsRGBValues(unsigned int x_1, unsigned int y_1, uns
 	}
 }
 
+CImg<unsigned char> ImageProcesser::getImageWithDuplicatedEdgeLines()
+{
+	CImg<unsigned char> temporaryImage(width + 2, height + 2, 1, 3, 0);
+
+	//add additional lines (like a padding) to the image so that the edge elements are taken into account
+	for (int x = 1; x < width; x++)
+	{
+		for (unsigned int channel = 0; channel < 3; channel++)
+		{
+			temporaryImage(x, 0, channel) = image(x - 1, 0, channel);
+			temporaryImage(x, height + 1, channel) = image(x - 1, height - 1, channel);
+		}
+	}
+	for (int y = 0; y <= height + 1; y++)
+	{
+		if (y == 0)
+		{
+			for (unsigned int channel = 0; channel < 3; channel++)
+			{
+				temporaryImage(0, 0, channel) = image(0, 0, channel);
+				temporaryImage(width + 1, 0, channel) = image(width - 1, 0, channel);
+			}
+			continue;
+		}
+		for (unsigned int channel = 0; channel < 3; channel++)
+		{
+			temporaryImage(0, y, channel) = image(0, y - 1, channel);
+			temporaryImage(width + 1, y, channel) = image(width - 1, y - 1, channel);
+		}
+
+		if (y == height + 1)
+		{
+			for (unsigned int channel = 0; channel < 3; channel++)
+			{
+				temporaryImage(0, height + 1, channel) = image(0, height - 1, channel);
+				temporaryImage(width + 1, height + 1, channel) = image(width - 1, height - 1, channel);
+			}
+			continue;
+		}
+	}
+	temporaryImage.draw_image(1, 1, image);
+
+	return temporaryImage;
+};
+
 int ImageProcesser::truncate(int value)
 {
 	if (value < 0) return 0;
@@ -31,6 +76,23 @@ int ImageProcesser::truncate(int value)
 
 	return value;
 }
+
+int getMedian(vector<unsigned char> channelValues)
+{
+	if (channelValues.size() == 0)
+	{
+		return 0;
+	}
+	sort(channelValues.begin(), channelValues.end());
+	size_t size = channelValues.size();
+	if (size % 2 == 0)
+	{
+		return (channelValues[(size / 2) - 1] + channelValues[size / 2]) / 2;
+	}
+
+	return channelValues[size / 2];
+}
+#pragma endregion
 
 #pragma region Functions
 
@@ -150,6 +212,152 @@ void ImageProcesser::diagonalFlip()
 		}
 	}
 }
+
+//void ImageProcesser::medianFilter()
+//{
+//	//rewrite this so that it does not use the getImage... function
+//	// there need to be cases considered on every edge
+//	// in the case of normal edges (not the corners) for x-1 or y-1 we should take x or y
+//	// for corners (x-1, y-1 or...) take (x,y)
+//	CImg<unsigned char> temporaryImage = getImageWithDuplicatedEdgeLines();
+//	//iterate through the image in 3x3 windows (the pixel in the center will be the one that is changed)
+//	unsigned int ix = 0;
+//	unsigned int iy = 0;
+//	//extend this to channels
+//	for (unsigned int x = 1; x <= width; x++)
+//	{
+//		for (unsigned int y = 1; y <= height; y++)
+//		{
+//			//in every window, take the elements into an array
+//			unsigned char red[9] = {
+//				temporaryImage(x - 1, y - 1, 0),
+//				temporaryImage(x, y - 1, 0),
+//				temporaryImage(x + 1, y - 1, 0),
+//				temporaryImage(x - 1, y, 0),
+//				temporaryImage(x, y, 0),
+//				temporaryImage(x + 1, y, 0),
+//				temporaryImage(x - 1, y + 1, 0),
+//				temporaryImage(x, y + 1, 0),
+//				temporaryImage(x + 1, y + 1, 0)
+//			};
+//			unsigned char green[9] = {
+//				temporaryImage(x - 1, y - 1, 1),
+//				temporaryImage(x, y - 1, 1),
+//				temporaryImage(x + 1, y - 1, 1),
+//				temporaryImage(x - 1, y, 1),
+//				temporaryImage(x, y, 1),
+//				temporaryImage(x + 1, y, 1),
+//				temporaryImage(x - 1, y + 1, 1),
+//				temporaryImage(x, y + 1, 1),
+//				temporaryImage(x + 1, y + 1, 1)
+//			};
+//			unsigned char blue[9] = {
+//				temporaryImage(x - 1, y - 1, 2),
+//				temporaryImage(x, y - 1, 2),
+//				temporaryImage(x + 1, y - 1, 2),
+//				temporaryImage(x - 1, y, 2),
+//				temporaryImage(x, y, 2),
+//				temporaryImage(x + 1, y, 2),
+//				temporaryImage(x - 1, y + 1, 2),
+//				temporaryImage(x, y + 1, 2),
+//				temporaryImage(x + 1, y + 1, 2)
+//			};
+//			//sort these elements and take the middle value
+//			//the middle value is now the value of the pixel in the center
+//			size_t redSize = sizeof(red) / sizeof(*red);
+//			sort(red, red + redSize);
+//			size_t greenSize = sizeof(green) / sizeof(*green);
+//			sort(green, green + greenSize);
+//			size_t blueSize = sizeof(blue) / sizeof(*blue);
+//			sort(blue, blue + blueSize);
+//			image(ix, iy, 0) = red[4];
+//			image(ix, iy, 1) = green[4];
+//			image(ix, iy, 2) = blue[4];
+//			iy++;
+//		}
+//		iy = 0;
+//		ix++;
+//	}
+//}
+
+void ImageProcesser::medianFilter(int radius)
+{
+	std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+	if (radius == 0) return;
+	//the parameter passed is the level - (--median 0 = 1x1 window, 1 = 3x3 window, 2 = 5x5 window, etc.)
+	//rewrite this so that it does not use the getImage... function
+	// there need to be cases considered on every edge
+	// in the case of normal edges (not the corners) for x-1 or y-1 we should take x or y
+	// for corners (x-1, y-1 or...) take (x,y)
+
+	//iterate through the image in 3x3 windows (the pixel in the center will be the one that is changed)
+
+	struct Window
+	{
+		unsigned short int x0;
+		unsigned short int x1;
+		unsigned short int y0;
+		unsigned short int y1;
+		vector<unsigned char> red;
+		vector<unsigned char> green;
+		vector<unsigned char> blue;
+	};
+
+	Window window;
+	for (unsigned short int x = 0; x < width; x++)
+	{
+		window.x0 = x - radius;
+		window.x1 = x + radius;
+
+		if (window.x0 < 0)
+		{
+			window.x0 = 0;
+		}
+		else if (window.x1 > width - 1)
+		{
+			window.x1 = width - 1;
+		}
+
+		for (unsigned short int y = 0; y < height; y++)
+		{
+			//cout << "x: " << x << " y: " << y << endl;
+			window.y0 = y - radius;
+			window.y1 = y + radius;
+			if (window.y0 < 0)
+			{
+				window.y0 = 0;
+			}
+			else if (window.y1 > height - 1)
+			{
+				window.y1 = height - 1;
+			}
+
+			for (unsigned short int i = window.x0; i <= window.x1; i++)
+			{
+				for (unsigned short int j = window.y0; j <= window.y1; j++)
+				{
+					window.red.push_back(image(i, j, 0));
+					window.green.push_back(image(i, j, 1));
+					window.blue.push_back(image(i, j, 2));
+				}
+			}
+
+			image(x, y, 0) = getMedian(window.red);
+			image(x, y, 1) = getMedian(window.green);
+			image(x, y, 2) = getMedian(window.blue);
+
+			//instead of clearing the vector, swap its elements
+			window.red.clear();
+			window.green.clear();
+			window.blue.clear();
+		}
+	}
+	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count() / (double)1000000;
+
+	cout << duration << " seconds";
+}
+
 #pragma endregion
 
 void ImageProcesser::processImage()
@@ -201,8 +409,8 @@ void ImageProcesser::processImage()
 	case max:
 
 		break;
-	case media:
-
+	case median:
+		medianFilter(value);
 		break;
 	case mse:
 
