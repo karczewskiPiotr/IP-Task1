@@ -2,6 +2,8 @@
 #include <string>
 #include "CImg.h"
 #include <iostream>
+#include <vector>
+#include <chrono>
 
 class ImageProcesser
 {
@@ -24,12 +26,18 @@ private:
 	void swapPixelsRGBValues(unsigned int x_1, unsigned int y_1, unsigned int x_2, unsigned int y_2);
 	cimg_library::CImg<unsigned char> getImageWithDuplicatedEdgeLines();
 
-	void changeBrightness();
+	int truncate(int value);
+	unsigned char getMedian(std::vector<unsigned char> &channelValues);
+
+	void changeBrightness(int modifier);
+	void changeToNegative();
+	void changeContrast(int modifier);
+	void enlargeImage(double modifier);
 	void horizontalFlip();
 	void verticalFlip();
 	void diagonalFlip();
 
-	void medianFilter();
+	void medianFilter(int radius);
 
 public:
 	ImageProcesser(std::string imageName, int option, int value);

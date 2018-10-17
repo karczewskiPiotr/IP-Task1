@@ -48,7 +48,6 @@ CImg<unsigned char> ImageProcesser::getImageWithDuplicatedEdgeLines()
 			}
 			continue;
 		}
-
 		for (unsigned int channel = 0; channel < 3; channel++)
 		{
 			temporaryImage(0, y, channel) = image(0, y - 1, channel);
@@ -69,12 +68,116 @@ CImg<unsigned char> ImageProcesser::getImageWithDuplicatedEdgeLines()
 
 	return temporaryImage;
 };
+
+int ImageProcesser::truncate(int value)
+{
+	if (value < 0) return 0;
+	if (value > 255) return 255;
+
+	return value;
+}
+
+unsigned char ImageProcesser::getMedian(vector<unsigned char> &channelValues)
+{
+	size_t size = channelValues.size();
+	if (size == 0)
+	{
+		return 0;
+	}
+	sort(channelValues.begin(), channelValues.end());
+	if (size % 2 == 0)
+	{
+		return (channelValues[(size / 2) - 1] + channelValues[size / 2]) / 2;
+	}
+
+	return channelValues[size / 2];
+}
 #pragma endregion
 
 #pragma region Functions
 
-void ImageProcesser::changeBrightness()
+void ImageProcesser::changeBrightness(int modifier)
 {
+	for (unsigned int y = 0; y < height; y++)
+	{
+		for (unsigned int x = 0; x < width; x++)
+		{
+			image(x, y, 0) = truncate(image(x, y, 0) + modifier);
+			image(x, y, 1) = truncate(image(x, y, 1) + modifier);
+			image(x, y, 2) = truncate(image(x, y, 2) + modifier);
+		}
+	}
+}
+
+void ImageProcesser::changeToNegative()
+{
+	for (unsigned int y = 0; y < height; y++)
+	{
+		for (unsigned int x = 0; x < width; x++)
+		{
+			image(x, y, 0) = ~image(x, y, 0);
+			image(x, y, 1) = ~image(x, y, 1);
+			image(x, y, 2) = ~image(x, y, 2);
+		}
+	}
+}
+
+void ImageProcesser::changeContrast(int modifier)
+{
+	double factor = (259.0 * (modifier + 255.0)) / (255.0 * (259.0 - modifier));
+	for (unsigned int y = 0; y < height; y++)
+	{
+		for (unsigned int x = 0; x < width; x++)
+		{
+			image(x, y, 0) = truncate((int)(factor * (image(x, y, 0) - 128) + 128));
+			image(x, y, 1) = truncate((int)(factor * (image(x, y, 1) - 128) + 128));
+			image(x, y, 2) = truncate((int)(factor * (image(x, y, 2) - 128) + 128));
+		}
+	}
+}
+
+void ImageProcesser::enlargeImage(double modifier)
+{
+	unsigned int enlargedWidth = width * modifier;
+	unsigned int enlargedHeight = height * modifier;
+	float step = 1 / modifier;
+	cimg_library::CImg<unsigned char> enlargedImage(enlargedWidth, enlargedHeight, 1, 3, 0);
+
+	for (unsigned int x = 0; x < enlargedWidth; x++)
+	{
+		for (unsigned int y = 0; y < enlargedHeight; y++)
+		{
+			if (step == 1) step = 1 / modifier;
+			//px, py - coordinates of upper left pixel (of 4 adjecent pixels) in the original image
+			int p1x = x / modifier;
+			int p1y = y / modifier;
+
+			//positions of 3 neighboring pixels
+			int p2x = p1x + 1;
+			int p2y = p1y;
+
+			int p3x = p1x;
+			int p3y = p1y + 1;
+
+			int p4x = p1x + 1;
+			int p4y = p1y + 1;
+
+			// p1x,p1y	p2x,p2y
+			// p3x,p3y	p4x,p4y
+
+			for (unsigned int channel = 0; channel < 3; channel++)
+			{
+				float sum1 = ((p2x - (p1x + step)) / (p2x - p1x)) * image(p1x, p1y, channel) + (((p1x + step) - p1x) / (p2x - p1x)) * image(p2x, p2y, channel);
+				float sum2 = ((p4x - (p3x + step)) / (p4x - p3x)) * image(p3x, p3y, channel) + (((p3x + step) - p3x) / (p4x - p3x)) * image(p4x, p4y, channel);
+				float finalSum = ((p3y - (p1y + step)) / (p3y - p1y)) * sum1 + (((p1y + step) - p1y) / (p3y - p1y)) * sum2;
+				enlargedImage(x, y, channel) = truncate((int)finalSum);
+			}
+
+			step += 1 / modifier;
+		}
+	}
+	enlargedImage.display("Processed image preview", false);
+	enlargedImage.save("enlargedImage.bmp");
 }
 
 void ImageProcesser::horizontalFlip()
@@ -110,67 +213,68 @@ void ImageProcesser::diagonalFlip()
 	}
 }
 
-void ImageProcesser::medianFilter()
+void ImageProcesser::medianFilter(int radius)
 {
+	if (radius == 0) return;
 
-	CImg<unsigned char> temporaryImage = getImageWithDuplicatedEdgeLines();
-	//iterate through the image in 3x3 windows (the pixel in the center will be the one that is changed)
-	unsigned int ix = 0;
-	unsigned int iy = 0;
-	//extend this to channels
-	for (unsigned int x = 1; x <= width; x++)
+	struct Window
 	{
-		for (unsigned int y = 1; y <= height; y++)
+		unsigned short int x0;
+		unsigned short int x1;
+		unsigned short int y0;
+		unsigned short int y1;
+		vector<unsigned char> red;
+		vector<unsigned char> green;
+		vector<unsigned char> blue;
+	};
+
+	Window window;
+	for (unsigned short int x = 0; x < width; x++)
+	{
+		window.x0 = x - radius;
+		window.x1 = x + radius;
+
+		if (window.x0 < 0)
 		{
-			//in every window, take the elements into an array
-			unsigned char red[9] = {
-				temporaryImage(x - 1, y - 1, 0),
-				temporaryImage(x, y - 1, 0),
-				temporaryImage(x + 1, y - 1, 0),
-				temporaryImage(x - 1, y, 0),
-				temporaryImage(x, y, 0),
-				temporaryImage(x + 1, y, 0),
-				temporaryImage(x - 1, y + 1, 0),
-				temporaryImage(x, y + 1, 0),
-				temporaryImage(x + 1, y + 1, 0)
-			};
-			unsigned char green[9] = {
-				temporaryImage(x - 1, y - 1, 1),
-				temporaryImage(x, y - 1, 1),
-				temporaryImage(x + 1, y - 1, 1),
-				temporaryImage(x - 1, y, 1),
-				temporaryImage(x, y, 1),
-				temporaryImage(x + 1, y, 1),
-				temporaryImage(x - 1, y + 1, 1),
-				temporaryImage(x, y + 1, 1),
-				temporaryImage(x + 1, y + 1, 1)
-			};
-			unsigned char blue[9] = {
-				temporaryImage(x - 1, y - 1, 2),
-				temporaryImage(x, y - 1, 2),
-				temporaryImage(x + 1, y - 1, 2),
-				temporaryImage(x - 1, y, 2),
-				temporaryImage(x, y, 2),
-				temporaryImage(x + 1, y, 2),
-				temporaryImage(x - 1, y + 1, 2),
-				temporaryImage(x, y + 1, 2),
-				temporaryImage(x + 1, y + 1, 2)
-			};
-			//sort these elements and take the middle value
-			//the middle value is now the value of the pixel in the center
-			size_t redSize = sizeof(red) / sizeof(*red);
-			sort(red, red + redSize);
-			size_t greenSize = sizeof(green) / sizeof(*green);
-			sort(green, green + greenSize);
-			size_t blueSize = sizeof(blue) / sizeof(*blue);
-			sort(blue, blue + blueSize);
-			image(ix, iy, 0) = red[4];
-			image(ix, iy, 1) = green[4];
-			image(ix, iy, 2) = blue[4];
-			iy++;
+			window.x0 = 0;
 		}
-		iy = 0;
-		ix++;
+		else if (window.x1 > width - 1)
+		{
+			window.x1 = width - 1;
+		}
+
+		for (unsigned short int y = 0; y < height; y++)
+		{
+			//cout << "x: " << x << " y: " << y << endl;
+			window.y0 = y - radius;
+			window.y1 = y + radius;
+			if (window.y0 < 0)
+			{
+				window.y0 = 0;
+			}
+			else if (window.y1 > height - 1)
+			{
+				window.y1 = height - 1;
+			}
+
+			for (unsigned short int i = window.x0; i <= window.x1; i++)
+			{
+				for (unsigned short int j = window.y0; j <= window.y1; j++)
+				{
+					window.red.push_back(image(i, j, 0));
+					window.green.push_back(image(i, j, 1));
+					window.blue.push_back(image(i, j, 2));
+				}
+			}
+
+			image(x, y, 0) = getMedian(window.red);
+			image(x, y, 1) = getMedian(window.green);
+			image(x, y, 2) = getMedian(window.blue);
+
+			window.red.clear();
+			window.green.clear();
+			window.blue.clear();
+		}
 	}
 }
 
@@ -193,14 +297,18 @@ void ImageProcesser::processImage()
 	height = image.height();
 	width = image.width();
 
+	std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+
 	switch (option)
 	{
 	case brightness:
+		changeBrightness(value);
 		break;
 	case contrast:
-
+		changeContrast(value);
 		break;
 	case negative:
+		changeToNegative();
 		break;
 	case hflip:
 		horizontalFlip();
@@ -215,7 +323,7 @@ void ImageProcesser::processImage()
 
 		break;
 	case enlarge:
-
+		enlargeImage(value);
 		break;
 	case min:
 
@@ -224,7 +332,7 @@ void ImageProcesser::processImage()
 
 		break;
 	case median:
-		medianFilter();
+		medianFilter(value);
 		break;
 	case mse:
 
@@ -244,7 +352,10 @@ void ImageProcesser::processImage()
 	default:
 		break;
 	}
+	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count() / (double)1000000;
 
+	cout << "Algorithm duration: " << duration << " seconds";
 	image.display("Processed image preview", false);
 	image.save("processedImage.bmp");
 };
