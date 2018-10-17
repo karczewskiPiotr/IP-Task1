@@ -77,20 +77,17 @@ int ImageProcesser::truncate(int value)
 	return value;
 }
 
-unsigned char ImageProcesser::getMedian(vector<unsigned char> &channelValues)
+unsigned char ImageProcesser::getMedian(unsigned char* channelValues, size_t arraySize)
 {
-	size_t size = channelValues.size();
-	if (size == 0)
+	sort(channelValues, channelValues + arraySize);
+	if (arraySize % 2 == 0)
 	{
-		return 0;
+		return (channelValues[(arraySize / 2) - 1] + channelValues[arraySize / 2]) / 2;
 	}
-	sort(channelValues.begin(), channelValues.end());
-	if (size % 2 == 0)
+	else
 	{
-		return (channelValues[(size / 2) - 1] + channelValues[size / 2]) / 2;
+		return channelValues[arraySize / 2];
 	}
-
-	return channelValues[size / 2];
 }
 #pragma endregion
 
@@ -216,16 +213,13 @@ void ImageProcesser::diagonalFlip()
 void ImageProcesser::medianFilter(int radius)
 {
 	if (radius == 0) return;
-
+	unsigned short int channels = image.spectrum();
 	struct Window
 	{
-		unsigned short int x0;
-		unsigned short int x1;
-		unsigned short int y0;
-		unsigned short int y1;
-		vector<unsigned char> red;
-		vector<unsigned char> green;
-		vector<unsigned char> blue;
+		short int x0;
+		short int x1;
+		short int y0;
+		short int y1;
 	};
 
 	Window window;
@@ -245,7 +239,6 @@ void ImageProcesser::medianFilter(int radius)
 
 		for (unsigned short int y = 0; y < height; y++)
 		{
-			//cout << "x: " << x << " y: " << y << endl;
 			window.y0 = y - radius;
 			window.y1 = y + radius;
 			if (window.y0 < 0)
@@ -257,23 +250,22 @@ void ImageProcesser::medianFilter(int radius)
 				window.y1 = height - 1;
 			}
 
-			for (unsigned short int i = window.x0; i <= window.x1; i++)
+			for (unsigned short int channel = 0; channel < channels; channel++)
 			{
-				for (unsigned short int j = window.y0; j <= window.y1; j++)
+				size_t arraySize = (window.x1 - window.x0 + 1) * (window.y1 - window.y0 + 1);
+				unsigned char* channelValues = new unsigned char[arraySize];
+				unsigned short int index = 0;
+				for (unsigned short int i = window.x0; i <= window.x1; i++)
 				{
-					window.red.push_back(image(i, j, 0));
-					window.green.push_back(image(i, j, 1));
-					window.blue.push_back(image(i, j, 2));
+					for (unsigned short int j = window.y0; j <= window.y1; j++)
+					{
+						channelValues[index] = image(i, j, channel);
+						index++;
+					}
 				}
+
+				image(x, y, channel) = getMedian(channelValues, arraySize);
 			}
-
-			image(x, y, 0) = getMedian(window.red);
-			image(x, y, 1) = getMedian(window.green);
-			image(x, y, 2) = getMedian(window.blue);
-
-			window.red.clear();
-			window.green.clear();
-			window.blue.clear();
 		}
 	}
 }
