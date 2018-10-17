@@ -27,6 +27,7 @@ private:
 	cimg_library::CImg<unsigned char> getImageWithDuplicatedEdgeLines();
 
 	int truncate(int value);
+	unsigned char getMedian(std::vector<unsigned char> &channelValues);
 
 	void changeBrightness(int modifier);
 	void changeToNegative();

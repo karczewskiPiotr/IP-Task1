@@ -77,14 +77,14 @@ int ImageProcesser::truncate(int value)
 	return value;
 }
 
-int getMedian(vector<unsigned char> channelValues)
+unsigned char ImageProcesser::getMedian(vector<unsigned char> &channelValues)
 {
-	if (channelValues.size() == 0)
+	size_t size = channelValues.size();
+	if (size == 0)
 	{
 		return 0;
 	}
 	sort(channelValues.begin(), channelValues.end());
-	size_t size = channelValues.size();
 	if (size % 2 == 0)
 	{
 		return (channelValues[(size / 2) - 1] + channelValues[size / 2]) / 2;
@@ -213,84 +213,9 @@ void ImageProcesser::diagonalFlip()
 	}
 }
 
-//void ImageProcesser::medianFilter()
-//{
-//	//rewrite this so that it does not use the getImage... function
-//	// there need to be cases considered on every edge
-//	// in the case of normal edges (not the corners) for x-1 or y-1 we should take x or y
-//	// for corners (x-1, y-1 or...) take (x,y)
-//	CImg<unsigned char> temporaryImage = getImageWithDuplicatedEdgeLines();
-//	//iterate through the image in 3x3 windows (the pixel in the center will be the one that is changed)
-//	unsigned int ix = 0;
-//	unsigned int iy = 0;
-//	//extend this to channels
-//	for (unsigned int x = 1; x <= width; x++)
-//	{
-//		for (unsigned int y = 1; y <= height; y++)
-//		{
-//			//in every window, take the elements into an array
-//			unsigned char red[9] = {
-//				temporaryImage(x - 1, y - 1, 0),
-//				temporaryImage(x, y - 1, 0),
-//				temporaryImage(x + 1, y - 1, 0),
-//				temporaryImage(x - 1, y, 0),
-//				temporaryImage(x, y, 0),
-//				temporaryImage(x + 1, y, 0),
-//				temporaryImage(x - 1, y + 1, 0),
-//				temporaryImage(x, y + 1, 0),
-//				temporaryImage(x + 1, y + 1, 0)
-//			};
-//			unsigned char green[9] = {
-//				temporaryImage(x - 1, y - 1, 1),
-//				temporaryImage(x, y - 1, 1),
-//				temporaryImage(x + 1, y - 1, 1),
-//				temporaryImage(x - 1, y, 1),
-//				temporaryImage(x, y, 1),
-//				temporaryImage(x + 1, y, 1),
-//				temporaryImage(x - 1, y + 1, 1),
-//				temporaryImage(x, y + 1, 1),
-//				temporaryImage(x + 1, y + 1, 1)
-//			};
-//			unsigned char blue[9] = {
-//				temporaryImage(x - 1, y - 1, 2),
-//				temporaryImage(x, y - 1, 2),
-//				temporaryImage(x + 1, y - 1, 2),
-//				temporaryImage(x - 1, y, 2),
-//				temporaryImage(x, y, 2),
-//				temporaryImage(x + 1, y, 2),
-//				temporaryImage(x - 1, y + 1, 2),
-//				temporaryImage(x, y + 1, 2),
-//				temporaryImage(x + 1, y + 1, 2)
-//			};
-//			//sort these elements and take the middle value
-//			//the middle value is now the value of the pixel in the center
-//			size_t redSize = sizeof(red) / sizeof(*red);
-//			sort(red, red + redSize);
-//			size_t greenSize = sizeof(green) / sizeof(*green);
-//			sort(green, green + greenSize);
-//			size_t blueSize = sizeof(blue) / sizeof(*blue);
-//			sort(blue, blue + blueSize);
-//			image(ix, iy, 0) = red[4];
-//			image(ix, iy, 1) = green[4];
-//			image(ix, iy, 2) = blue[4];
-//			iy++;
-//		}
-//		iy = 0;
-//		ix++;
-//	}
-//}
-
 void ImageProcesser::medianFilter(int radius)
 {
-	std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 	if (radius == 0) return;
-	//the parameter passed is the level - (--median 0 = 1x1 window, 1 = 3x3 window, 2 = 5x5 window, etc.)
-	//rewrite this so that it does not use the getImage... function
-	// there need to be cases considered on every edge
-	// in the case of normal edges (not the corners) for x-1 or y-1 we should take x or y
-	// for corners (x-1, y-1 or...) take (x,y)
-
-	//iterate through the image in 3x3 windows (the pixel in the center will be the one that is changed)
 
 	struct Window
 	{
@@ -346,16 +271,11 @@ void ImageProcesser::medianFilter(int radius)
 			image(x, y, 1) = getMedian(window.green);
 			image(x, y, 2) = getMedian(window.blue);
 
-			//instead of clearing the vector, swap its elements
 			window.red.clear();
 			window.green.clear();
 			window.blue.clear();
 		}
 	}
-	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count() / (double)1000000;
-
-	cout << duration << " seconds";
 }
 
 #pragma endregion
@@ -376,6 +296,8 @@ void ImageProcesser::processImage()
 	image = initialImage;
 	height = image.height();
 	width = image.width();
+
+	std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
 	switch (option)
 	{
@@ -430,7 +352,10 @@ void ImageProcesser::processImage()
 	default:
 		break;
 	}
+	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count() / (double)1000000;
 
+	cout << "Algorithm duration: " << duration << " seconds";
 	image.display("Processed image preview", false);
 	image.save("processedImage.bmp");
 };
