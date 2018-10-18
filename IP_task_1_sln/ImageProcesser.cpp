@@ -89,6 +89,26 @@ unsigned char ImageProcesser::getMedian(unsigned char* channelValues, size_t arr
 		return channelValues[arraySize / 2];
 	}
 }
+
+unsigned char ImageProcesser::getMin(unsigned char channelValues[], size_t size)
+{
+	unsigned char smallest = channelValues[0];
+	for (unsigned short int i = 1; i < size; i++)
+	{
+		if (channelValues[i] < smallest) smallest = channelValues[i];
+	}
+	return smallest;
+}
+
+unsigned char ImageProcesser::getMax(unsigned char channelValues[], size_t size)
+{
+	unsigned char highest = channelValues[0];
+	for (unsigned short int i = 1; i < size; i++)
+	{
+		if (channelValues[i] > highest) highest = channelValues[i];
+	}
+	return highest;
+}
 #pragma endregion
 
 #pragma region Functions
@@ -210,10 +230,11 @@ void ImageProcesser::diagonalFlip()
 	}
 }
 
-void ImageProcesser::medianFilter(int radius)
+void ImageProcesser::minFilter(int radius)
 {
 	if (radius == 0) return;
 	unsigned short int channels = image.spectrum();
+	CImg<unsigned char> imageCopy = image;
 	struct Window
 	{
 		short int x0;
@@ -223,7 +244,13 @@ void ImageProcesser::medianFilter(int radius)
 	};
 
 	Window window;
-	for (unsigned short int x = 0; x < width; x++)
+	unsigned short int x;
+	unsigned short int y;
+	unsigned short int channel;
+	unsigned short int i;
+	unsigned short int j;
+	unsigned short int index;
+	for (x = 0; x < width; x++)
 	{
 		window.x0 = x - radius;
 		window.x1 = x + radius;
@@ -237,7 +264,7 @@ void ImageProcesser::medianFilter(int radius)
 			window.x1 = width - 1;
 		}
 
-		for (unsigned short int y = 0; y < height; y++)
+		for (y = 0; y < height; y++)
 		{
 			window.y0 = y - radius;
 			window.y1 = y + radius;
@@ -250,24 +277,162 @@ void ImageProcesser::medianFilter(int radius)
 				window.y1 = height - 1;
 			}
 
-			for (unsigned short int channel = 0; channel < channels; channel++)
+			for (channel = 0; channel < channels; channel++)
 			{
 				size_t arraySize = (window.x1 - window.x0 + 1) * (window.y1 - window.y0 + 1);
 				unsigned char* channelValues = new unsigned char[arraySize];
-				unsigned short int index = 0;
-				for (unsigned short int i = window.x0; i <= window.x1; i++)
+				index = 0;
+				for (i = window.x0; i <= window.x1; i++)
 				{
-					for (unsigned short int j = window.y0; j <= window.y1; j++)
+					for (j = window.y0; j <= window.y1; j++)
+					{
+						channelValues[index] = image(i, j, channel);
+						index++;
+					}
+				}
+				imageCopy(x, y, channel) = getMin(channelValues, arraySize);
+				delete[] channelValues;
+			}
+		}
+	}
+	image = imageCopy;
+}
+
+void ImageProcesser::maxFilter(int radius)
+{
+	if (radius == 0) return;
+	unsigned short int channels = image.spectrum();
+	CImg<unsigned char> imageCopy = image;
+	struct Window
+	{
+		short int x0;
+		short int x1;
+		short int y0;
+		short int y1;
+	};
+
+	Window window;
+	unsigned short int x;
+	unsigned short int y;
+	unsigned short int channel;
+	unsigned short int i;
+	unsigned short int j;
+	unsigned short int index;
+	for (x = 0; x < width; x++)
+	{
+		window.x0 = x - radius;
+		window.x1 = x + radius;
+
+		if (window.x0 < 0)
+		{
+			window.x0 = 0;
+		}
+		else if (window.x1 > width - 1)
+		{
+			window.x1 = width - 1;
+		}
+
+		for (y = 0; y < height; y++)
+		{
+			window.y0 = y - radius;
+			window.y1 = y + radius;
+			if (window.y0 < 0)
+			{
+				window.y0 = 0;
+			}
+			else if (window.y1 > height - 1)
+			{
+				window.y1 = height - 1;
+			}
+
+			for (channel = 0; channel < channels; channel++)
+			{
+				size_t arraySize = (window.x1 - window.x0 + 1) * (window.y1 - window.y0 + 1);
+				unsigned char* channelValues = new unsigned char[arraySize];
+				index = 0;
+				for (i = window.x0; i <= window.x1; i++)
+				{
+					for (j = window.y0; j <= window.y1; j++)
+					{
+						channelValues[index] = image(i, j, channel);
+						index++;
+					}
+				}
+				imageCopy(x, y, channel) = getMax(channelValues, arraySize);
+				delete[] channelValues;
+			}
+		}
+	}
+	image = imageCopy;
+}
+
+void ImageProcesser::medianFilter(int radius)
+{
+	if (radius == 0) return;
+	unsigned short int channels = image.spectrum();
+	CImg<unsigned char> imageCopy = image;
+	struct Window
+	{
+		short int x0;
+		short int x1;
+		short int y0;
+		short int y1;
+	};
+
+	Window window;
+	unsigned short int x;
+	unsigned short int y;
+	unsigned short int channel;
+	unsigned short int i;
+	unsigned short int j;
+	unsigned short int index;
+	for (x = 0; x < width; x++)
+	{
+		window.x0 = x - radius;
+		window.x1 = x + radius;
+
+		if (window.x0 < 0)
+		{
+			window.x0 = 0;
+		}
+		else if (window.x1 > width - 1)
+		{
+			window.x1 = width - 1;
+		}
+
+		for (y = 0; y < height; y++)
+		{
+			window.y0 = y - radius;
+			window.y1 = y + radius;
+			if (window.y0 < 0)
+			{
+				window.y0 = 0;
+			}
+			else if (window.y1 > height - 1)
+			{
+				window.y1 = height - 1;
+			}
+
+			for (channel = 0; channel < channels; channel++)
+			{
+				size_t arraySize = (window.x1 - window.x0 + 1) * (window.y1 - window.y0 + 1);
+				unsigned char* channelValues = new unsigned char[arraySize];
+				index = 0;
+				for (i = window.x0; i <= window.x1; i++)
+				{
+					for (j = window.y0; j <= window.y1; j++)
 					{
 						channelValues[index] = image(i, j, channel);
 						index++;
 					}
 				}
 
-				image(x, y, channel) = getMedian(channelValues, arraySize);
+				imageCopy(x, y, channel) = getMedian(channelValues, arraySize);
+				delete[] channelValues;
 			}
 		}
 	}
+	image = imageCopy;
 }
 
 #pragma endregion
@@ -318,10 +483,10 @@ void ImageProcesser::processImage()
 		enlargeImage(value);
 		break;
 	case min:
-
+		minFilter(value);
 		break;
 	case max:
-
+		maxFilter(value);
 		break;
 	case median:
 		medianFilter(value);

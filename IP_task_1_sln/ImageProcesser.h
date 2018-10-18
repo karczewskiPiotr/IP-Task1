@@ -28,6 +28,8 @@ private:
 
 	int truncate(int value);
 	unsigned char getMedian(unsigned char* channelValues, size_t arraySize);
+	unsigned char getMin(unsigned char channelValues[], size_t arraySize);
+	unsigned char getMax(unsigned char channelValues[], size_t arraySize);
 
 	void changeBrightness(int modifier);
 	void changeToNegative();
@@ -38,6 +40,8 @@ private:
 	void diagonalFlip();
 
 	void medianFilter(int radius);
+	void minFilter(int radius);
+	void maxFilter(int radius);
 
 public:
 	ImageProcesser(std::string imageName, int option, int value);
