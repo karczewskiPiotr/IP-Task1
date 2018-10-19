@@ -43,6 +43,11 @@ bool ArgumentsHandler::valueIsValid(string value)
 	return true;
 }
 
+bool ArgumentsHandler::isNameOfFile(std::string name)
+{
+	return name.size() >= 4 && name.compare(name.size() - 4, 4, ".bmp") == 0;
+}
+
 void ArgumentsHandler::helpMessage()
 {
 	//R"()" allows to print text exactly like u see it
@@ -128,6 +133,27 @@ void ArgumentsHandler::validateArguments()
 			(error.*exception)();
 		}
 		break;
+	case 5:
+		imageName = argv[1];
+		noisyImageName = argv[3];
+		denoisedImageName = argv[4];
+		option = argv[2];
+
+		try
+		{
+			if (optionIsValid(option))
+			{
+				if (optionRequiresValue(option) || option == "--help" || option == "--negative") { throw error.invalidArguments; }
+				else if (isNameOfFile(noisyImageName) && isNameOfFile(denoisedImageName)) { argumentsAreValid = true; break; }
+				else throw error.invalidValue;
+			}
+			else throw error.invalidArguments;
+		}
+		catch (Error_fnc_ptr exception)
+		{
+			(error.*exception)();
+		}
+		break;
 	default:
 		error.InvalidNumberOfArguments();
 		break;
@@ -137,6 +163,16 @@ void ArgumentsHandler::validateArguments()
 string ArgumentsHandler::get_imageName() const
 {
 	return imageName;
+}
+
+std::string ArgumentsHandler::get_noisyImageName() const
+{
+	return noisyImageName;
+}
+
+std::string ArgumentsHandler::get_denoisedImageName() const
+{
+	return denoisedImageName;
 }
 
 string ArgumentsHandler::get_option() const
