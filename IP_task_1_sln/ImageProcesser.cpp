@@ -3,8 +3,8 @@
 using namespace cimg_library;
 using namespace std;
 
-ImageProcesser::ImageProcesser(std::string imageName, int option, int value)
-	:imageName(imageName), option(option), value(value)
+ImageProcesser::ImageProcesser(std::string imageName, int option, int value, std::string noisyImageName, std::string denoisedImageName)
+	:imageName(imageName), option(option), value(value), noisyImageName(noisyImageName), denoisedImageName(denoisedImageName)
 {
 }
 
@@ -13,6 +13,7 @@ ImageProcesser::~ImageProcesser()
 }
 
 #pragma region HelperFunctions
+
 void ImageProcesser::swapPixelsRGBValues(unsigned int x_1, unsigned int y_1, unsigned int x_2, unsigned int y_2)
 {
 	unsigned char temp;
@@ -427,13 +428,20 @@ void ImageProcesser::medianFilter(int radius)
 void ImageProcesser::processImage()
 {
 	cimg_library::CImg<unsigned char> initialImage;
+	cimg_library::CImg<unsigned char> noisyImage;
+	cimg_library::CImg<unsigned char> denoisedImage;
 	try
 	{
 		initialImage.load(imageName.c_str());
+		if (option >= 13 && option <= 17)
+		{
+			noisyImage.load(noisyImageName.c_str());
+			denoisedImage.load(denoisedImageName.c_str());
+		}
 	}
 	catch (CImgException)
 	{
-		cout << endl << errorMessageWrongFilename << endl;
+		cout << endl << "Image could not be loaded. Please check whether the filename is correct." << endl;
 	}
 
 	if (!initialImage) return;

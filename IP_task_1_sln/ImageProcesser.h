@@ -14,14 +14,15 @@ private:
 	};
 
 	std::string imageName;
+	std::string noisyImageName;
+	std::string denoisedImageName;
+
 	int option;
 	int value;
 
 	cimg_library::CImg<unsigned char> image;
 	unsigned short int height;
 	unsigned short int width;
-
-	std::string errorMessageWrongFilename = "Image could not be loaded. Please check whether the filename is correct.";
 
 	void swapPixelsRGBValues(unsigned int x_1, unsigned int y_1, unsigned int x_2, unsigned int y_2);
 
@@ -44,7 +45,7 @@ private:
 	void maxFilter(int radius);
 
 public:
-	ImageProcesser(std::string imageName, int option, int value);
+	ImageProcesser(std::string imageName, int option, int value, std::string noisyImageName, std::string denoisedImageName);
 	~ImageProcesser();
 
 	void processImage();
