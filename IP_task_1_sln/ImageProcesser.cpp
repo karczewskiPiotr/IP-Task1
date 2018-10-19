@@ -423,20 +423,61 @@ void ImageProcesser::medianFilter(int radius)
 	image = imageCopy;
 }
 
+void ImageProcesser::calculateMSE()
+{
+	double mse1 = 0, mse2 = 0, factor = 1 / (double)(width * height);
+	for (int x = 0; x < width; x++)
+	{
+		for (int y = 0; y < height; y++)
+		{
+			for (int channel = 0; channel < 3; channel++)
+			{
+				mse1 += pow(image(x, y, channel) - noisyImage(x, y, channel), 2);
+				mse2 += pow(image(x, y, channel) - denoisedImage(x, y, channel), 2);
+			}
+		}
+	}
+	mse1 *= factor;
+	mse2 *= factor;
+	cout << "Difference between two calcualted values is: " << mse1 - mse2 << endl;
+}
+
+void ImageProcesser::calculatePMSE()
+{
+	int max1 = 0, max2 = 0;
+	double pmse1 = 0, pmse2 = 0, factor = 1 / (double)(width * height);
+	for (int x = 0; x < width; x++)
+	{
+		for (int y = 0; y < height; y++)
+		{
+			for (int channel = 0; channel < 3; channel++)
+			{
+				max1 = max1 < noisyImage(x, y, channel) ? noisyImage(x, y, channel) : max1;
+				max2 = max2 < denoisedImage(x, y, channel) ? denoisedImage(x, y, channel) : max2;
+				pmse1 += pow(image(x, y, channel) - noisyImage(x, y, channel), 2);
+				pmse2 += pow(image(x, y, channel) - denoisedImage(x, y, channel), 2);
+			}
+		}
+	}
+	pmse1 = (pmse1 * factor) / pow(max1, 2);
+	pmse2 = (pmse2 * factor) / pow(max2, 2);
+	cout << "Difference between two calculated values is: " << pmse1 - pmse2 << endl;
+}
+
 #pragma endregion
 
 void ImageProcesser::processImage()
 {
 	cimg_library::CImg<unsigned char> initialImage;
-	cimg_library::CImg<unsigned char> noisyImage;
-	cimg_library::CImg<unsigned char> denoisedImage;
+	cimg_library::CImg<unsigned char> initialNoisyImage;
+	cimg_library::CImg<unsigned char> initialDenoisedImage;
 	try
 	{
 		initialImage.load(imageName.c_str());
 		if (option >= 13 && option <= 17)
 		{
-			noisyImage.load(noisyImageName.c_str());
-			denoisedImage.load(denoisedImageName.c_str());
+			initialNoisyImage.load(noisyImageName.c_str());
+			initialDenoisedImage.load(denoisedImageName.c_str());
 		}
 	}
 	catch (CImgException)
@@ -446,6 +487,8 @@ void ImageProcesser::processImage()
 
 	if (!initialImage) return;
 	image = initialImage;
+	noisyImage = initialNoisyImage;
+	denoisedImage = initialDenoisedImage;
 	height = image.height();
 	width = image.width();
 
@@ -487,10 +530,10 @@ void ImageProcesser::processImage()
 		medianFilter(value);
 		break;
 	case mse:
-
+		calculateMSE();
 		break;
 	case pmse:
-
+		calculatePMSE();
 		break;
 	case snr:
 
