@@ -33,6 +33,7 @@ private:
 	void changeBrightness(int modifier);
 	void changeToNegative();
 	void changeContrast(int modifier);
+	void shrinkImage(double modifier);
 	void enlargeImage(double modifier);
 	void horizontalFlip();
 	void verticalFlip();
