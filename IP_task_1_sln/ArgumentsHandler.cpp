@@ -28,7 +28,7 @@ bool ArgumentsHandler::optionIsValid(string option)
 
 bool ArgumentsHandler::optionRequiresValue(string option)
 {
-	return option == "--brightness" || option == "--contrast" || option == "--enlarge" || option == "--shrink";
+	return option == "--brightness" || option == "--contrast" || option == "--enlarge" || option == "--shrink" || option == "--median" || option == "--min" || option == "--max";
 }
 
 bool ArgumentsHandler::valueIsValid(string value)
