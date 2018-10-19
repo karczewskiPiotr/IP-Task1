@@ -21,6 +21,8 @@ private:
 	int value;
 
 	cimg_library::CImg<unsigned char> image;
+	cimg_library::CImg<unsigned char> noisyImage;
+	cimg_library::CImg<unsigned char> denoisedImage;
 	unsigned short int height;
 	unsigned short int width;
 
@@ -41,6 +43,8 @@ private:
 	void diagonalFlip();
 
 	void medianFilter(int radius);
+	void calculateMSE();
+	void calculatePMSE();
 	void minFilter(int radius);
 	void maxFilter(int radius);
 
