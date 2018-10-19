@@ -12,6 +12,7 @@ ImageProcesser::ImageProcesser(std::string imageName, int option, int value)
 ImageProcesser::~ImageProcesser()
 {
 }
+
 #pragma region HelperFunctions
 void ImageProcesser::swapPixelsRGBValues(unsigned int x_1, unsigned int y_1, unsigned int x_2, unsigned int y_2)
 {
@@ -23,51 +24,6 @@ void ImageProcesser::swapPixelsRGBValues(unsigned int x_1, unsigned int y_1, uns
 		image(x_2, y_2, channel) = temp;
 	}
 }
-
-CImg<unsigned char> ImageProcesser::getImageWithDuplicatedEdgeLines()
-{
-	CImg<unsigned char> temporaryImage(width + 2, height + 2, 1, 3, 0);
-
-	//add additional lines (like a padding) to the image so that the edge elements are taken into account
-	for (int x = 1; x < width; x++)
-	{
-		for (unsigned int channel = 0; channel < 3; channel++)
-		{
-			temporaryImage(x, 0, channel) = image(x - 1, 0, channel);
-			temporaryImage(x, height + 1, channel) = image(x - 1, height - 1, channel);
-		}
-	}
-	for (int y = 0; y <= height + 1; y++)
-	{
-		if (y == 0)
-		{
-			for (unsigned int channel = 0; channel < 3; channel++)
-			{
-				temporaryImage(0, 0, channel) = image(0, 0, channel);
-				temporaryImage(width + 1, 0, channel) = image(width - 1, 0, channel);
-			}
-			continue;
-		}
-		for (unsigned int channel = 0; channel < 3; channel++)
-		{
-			temporaryImage(0, y, channel) = image(0, y - 1, channel);
-			temporaryImage(width + 1, y, channel) = image(width - 1, y - 1, channel);
-		}
-
-		if (y == height + 1)
-		{
-			for (unsigned int channel = 0; channel < 3; channel++)
-			{
-				temporaryImage(0, height + 1, channel) = image(0, height - 1, channel);
-				temporaryImage(width + 1, height + 1, channel) = image(width - 1, height - 1, channel);
-			}
-			continue;
-		}
-	}
-	temporaryImage.draw_image(1, 1, image);
-
-	return temporaryImage;
-};
 
 int ImageProcesser::truncate(int value)
 {
@@ -90,7 +46,7 @@ unsigned char ImageProcesser::getMedian(unsigned char* channelValues, size_t arr
 	}
 }
 
-unsigned char ImageProcesser::getMin(unsigned char channelValues[], size_t size)
+unsigned char ImageProcesser::getMin(unsigned char* channelValues, size_t size)
 {
 	unsigned char smallest = channelValues[0];
 	for (unsigned short int i = 1; i < size; i++)
@@ -100,7 +56,7 @@ unsigned char ImageProcesser::getMin(unsigned char channelValues[], size_t size)
 	return smallest;
 }
 
-unsigned char ImageProcesser::getMax(unsigned char channelValues[], size_t size)
+unsigned char ImageProcesser::getMax(unsigned char* channelValues, size_t size)
 {
 	unsigned char highest = channelValues[0];
 	for (unsigned short int i = 1; i < size; i++)
@@ -509,6 +465,7 @@ void ImageProcesser::processImage()
 	default:
 		break;
 	}
+
 	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count() / (double)1000000;
 

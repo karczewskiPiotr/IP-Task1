@@ -24,12 +24,11 @@ private:
 	std::string errorMessageWrongFilename = "Image could not be loaded. Please check whether the filename is correct.";
 
 	void swapPixelsRGBValues(unsigned int x_1, unsigned int y_1, unsigned int x_2, unsigned int y_2);
-	cimg_library::CImg<unsigned char> getImageWithDuplicatedEdgeLines();
 
 	int truncate(int value);
 	unsigned char getMedian(unsigned char* channelValues, size_t arraySize);
-	unsigned char getMin(unsigned char channelValues[], size_t arraySize);
-	unsigned char getMax(unsigned char channelValues[], size_t arraySize);
+	unsigned char getMin(unsigned char* channelValues, size_t arraySize);
+	unsigned char getMax(unsigned char* channelValues, size_t arraySize);
 
 	void changeBrightness(int modifier);
 	void changeToNegative();
