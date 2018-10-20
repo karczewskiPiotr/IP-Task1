@@ -2,7 +2,6 @@
 #include <string>
 #include "CImg.h"
 #include <iostream>
-#include <vector>
 #include <chrono>
 
 class ImageProcesser
@@ -43,10 +42,14 @@ private:
 	void diagonalFlip();
 
 	void medianFilter(int radius);
-	void calculateMSE();
-	void calculatePMSE();
 	void minFilter(int radius);
 	void maxFilter(int radius);
+
+	void calculateMSE();
+	void calculatePMSE();
+	void calculateSNR();
+	void calculatePSNR();
+	void calculateMD();
 
 public:
 	ImageProcesser(std::string imageName, int option, int value, std::string noisyImageName, std::string denoisedImageName);
@@ -54,4 +57,3 @@ public:
 
 	void processImage();
 };
-
