@@ -1,6 +1,7 @@
 #include "Error.h"
 #include <iostream>
 
+
 Error::Error()
 {
 }

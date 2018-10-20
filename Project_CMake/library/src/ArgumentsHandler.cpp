@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 
+
 using namespace std;
 
 ArgumentsHandler::ArgumentsHandler(int argc, char* argv[])
@@ -52,77 +53,26 @@ bool ArgumentsHandler::isNameOfFile(std::string name)
 
 void ArgumentsHandler::helpMessage()
 {
+	//R"()" allows to print text exactly like u see it
 	std::cout << R"(Command line format:
 	name --command [-argument=value [...]]
-
 Available commands:
-
-	Elementary operations:
-	--brightness
-		Image brightness modification
-	--contrast
-		Image contrast modification
-	--negative
-		Negative
-	
-	Geometric operations:
-	--hflip
-		Horizontal flip
-			Swaps every pixel's channel values from left to half the image's
-			width with the corresponding pixel from the right half.
-	--vflip
-		Vertical flip
-			Swaps every pixel's channel values from top to half the image's
-			height with the corresponding pixel from the bottom half.
-	--dflip
-		Diagonal flip
-			Swaps every pixel's channel values from top to half the image's
-			height with the pixel placed diagonally on the bottom half.
-	--shrink 
-		Image shrinking
-	--enlarge
-		Image enlargement
-
-	Filters:
-		General information:
-			A moving window with side length of 2 * value + 1 is created.
-			Eg. --min 1 produces a window of size 3x3.
-			The image is then traversed by the window (with the pixel which
-			we want to change in the center) and if the window is to
-			exceed the image's height or width, it is shortened to match
-			the image's size.
-			Eg. a 3x3 window in pixel (0,0) will be shortened to a 2x2 window.
-			For every channel, a dynamic array is filled with it's values
-			and then an operation is performed according to the chosen option.
-			Every operation is performed on a temporary image.
-	--min value
-		Min filter
-			Takes the minimum value for every channel and substitutes it in place
-			of the channel at the pixel's position on a temporary image.
-	--max value
-		Max filter
-			Takes the maximum value for every channel and substitutes it in place
-			of the channel at the pixel's position on a temporary image.
-	--median value
-		Median filter
-			Sorts the values of every channel, takes the median and substitutes
-			it in place of the channel at the pixel's position on a temporary image.
-
-	Similarity measures:
-		General information:
-			Used to compare the effectiveness of noise removal methods.
-			The correct format:
-			name originalImage.bmp --option noisyImage.bmp denoisedImage.bmp
-	--mse
-		Mean square error
-	--pmse
-		Peak mean square error
-	--snr
-		Signal to noise ratio
-	--psnr
-		Peak signal to noise ratio
-	--md
-		Maximum difference)";
+	--brightness - Image brightness modification
+	--contrast - Image contrast modification
+	--negative - Negative
+	--hflip - Horizontal flip
+	--vflip - Vertical flip
+	--dflip - Diagonal flip
+	--shrink - Image shrinking
+	--enlarge - Image enlargement
+	--min - Min filter
+	--max - Max filter
+	--median - Median filter
+	--mse - Mean square
+	--pmse - Peak mean square
+	--snr - Signal to noise ratio
+	--psnr - Peak signal to noise ratio
+	--md - Maximum difference)";
 }
 
 void ArgumentsHandler::validateArguments()
