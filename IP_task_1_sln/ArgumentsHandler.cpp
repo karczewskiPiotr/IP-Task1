@@ -60,10 +60,14 @@ Available commands:
 	Elementary operations:
 	--brightness
 		Image brightness modification
+			Adds provided value to the pixel's RGB channels keeping it within
+			range from 0 to 255.
 	--contrast
 		Image contrast modification
+			Chnages pixel's RGB values via use of linear function.
 	--negative
 		Negative
+			Negates pixel's RGB values with the use of bitwise negation operator.
 	
 	Geometric operations:
 	--hflip
@@ -80,9 +84,13 @@ Available commands:
 			height with the pixel placed diagonally on the bottom half.
 	--shrink 
 		Image shrinking
+			Shrinks the image by interpolating pixel's RGB values in 2 x 2 grid
+			by taking 0.25 of each surrounding pixel with respect to the original image.
 	--enlarge
 		Image enlargement
-
+			Enlarges the image with the use of bilinear interpolation. Estimating distance 
+			between original pixels in 2 x 2 grid program calculates the weighted sum of these
+			pixels' RGB values and assigns it to blank pixels in enlarged image.
 	Filters:
 		General information:
 			A moving window with side length of 2 * value + 1 is created.
