@@ -115,7 +115,7 @@ void ImageProcesser::shrinkImage(double modifier)
 {
 	unsigned int enlargedWidth = (unsigned int)(width / modifier);
 	unsigned int enlargedHeight = (unsigned int)(height / modifier);
-	double step, finalSum;
+	double finalSum;
 	cimg_library::CImg<unsigned char> enlargedImage(enlargedWidth, enlargedHeight, 1, 3, 0);
 	int p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y;
 
@@ -123,7 +123,6 @@ void ImageProcesser::shrinkImage(double modifier)
 	{
 		for (unsigned int x = 0; x < enlargedWidth; x++)
 		{
-			step = (modifier - 1) / 2;
 			p1x = (int)(x * modifier);
 			p1y = (int)(y * modifier);
 
@@ -599,7 +598,6 @@ void ImageProcesser::processImage()
 		diagonalFlip();
 		break;
 	case shrink:
-		cout << value << endl;
 		shrinkImage(value);
 		break;
 	case enlarge:
