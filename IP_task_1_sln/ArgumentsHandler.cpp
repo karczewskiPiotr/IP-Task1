@@ -40,9 +40,17 @@ bool ArgumentsHandler::valueIsValid(string value)
 	{
 		if (*iterator < 48 || *iterator > 57)
 		{
-			if (iterator == value.begin() && *iterator == 45) continue;
-			if (*iterator != 46) return false;
-			else if (*iterator == 46) dot_counter += 1;
+			if (option == "--brightness" || option == "--contrast")
+			{
+				if (iterator == value.begin() && *iterator == 45) continue;
+				if (*iterator != 46) return false;
+				else if (*iterator == 46) dot_counter += 1;
+			}
+			else if (option == "--enlarge" || option == "--shrink")
+			{
+				if (*iterator != 46) return false;
+				else if (*iterator == 46) dot_counter += 1;
+			}
 		}
 		if (dot_counter > 1) return false;
 	}
