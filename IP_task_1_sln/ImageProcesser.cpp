@@ -5,7 +5,7 @@
 using namespace cimg_library;
 using namespace std;
 
-ImageProcesser::ImageProcesser(std::string imageName, int option, int value, std::string noisyImageName, std::string denoisedImageName)
+ImageProcesser::ImageProcesser(std::string imageName, int option, double value, std::string noisyImageName, std::string denoisedImageName)
 	:imageName(imageName), option(option), value(value), noisyImageName(noisyImageName), denoisedImageName(denoisedImageName)
 {
 }
@@ -531,6 +531,10 @@ void ImageProcesser::calculateMD()
 			}
 		}
 	}
+	calculateMSE();
+	calculatePMSE();
+	calculateSNR();
+	calculatePSNR();
 	cout << "The Maximum Difference for the images is: " << endl << "Original image and the image with noise: " << maxDiff1 << endl
 		<< "Original image and the denoised image: " << maxDiff2 << endl;
 }
@@ -595,6 +599,7 @@ void ImageProcesser::processImage()
 		diagonalFlip();
 		break;
 	case shrink:
+		cout << value << endl;
 		shrinkImage(value);
 		break;
 	case enlarge:

@@ -35,12 +35,16 @@ bool ArgumentsHandler::optionRequiresValue(string option)
 
 bool ArgumentsHandler::valueIsValid(string value)
 {
+	int dot_counter = 0;
 	for (string::iterator iterator = value.begin(); iterator != value.end(); ++iterator)
 	{
 		if (*iterator < 48 || *iterator > 57)
 		{
-			return false;
+			if (iterator == value.begin() && *iterator == 45) continue;
+			if (*iterator != 46) return false;
+			else if (*iterator == 46) dot_counter += 1;
 		}
+		if (dot_counter > 1) return false;
 	}
 	return true;
 }
@@ -241,7 +245,7 @@ string ArgumentsHandler::get_option() const
 	return option;
 }
 
-unsigned int ArgumentsHandler::get_value() const
+double ArgumentsHandler::get_value() const
 {
-	return value.length() > 0 ? stoi(value) : 0;
+	return value.length() > 0 ? stod(value) : 0;
 }
