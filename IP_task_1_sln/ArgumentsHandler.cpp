@@ -51,6 +51,7 @@ bool ArgumentsHandler::valueIsValid(string value)
 				if (*iterator != 46) return false;
 				else if (*iterator == 46) dot_counter += 1;
 			}
+			if (option == "--median" || option == "--min" || option == "--max") return false;
 		}
 		if (dot_counter > 1) return false;
 	}
