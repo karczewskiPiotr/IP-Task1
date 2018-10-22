@@ -1,11 +1,11 @@
 #include "ImageProcesser.h"
-#include <iostream>
 #include <chrono>
+#include <iostream>
 
 using namespace cimg_library;
 using namespace std;
 
-ImageProcesser::ImageProcesser(std::string imageName, int option, int value, std::string noisyImageName, std::string denoisedImageName)
+ImageProcesser::ImageProcesser(std::string imageName, int option, double value, std::string noisyImageName, std::string denoisedImageName)
 	:imageName(imageName), option(option), value(value), noisyImageName(noisyImageName), denoisedImageName(denoisedImageName)
 {
 }
@@ -115,7 +115,7 @@ void ImageProcesser::shrinkImage(double modifier)
 {
 	unsigned int enlargedWidth = (unsigned int)(width / modifier);
 	unsigned int enlargedHeight = (unsigned int)(height / modifier);
-	double step, finalSum;
+	double finalSum;
 	cimg_library::CImg<unsigned char> enlargedImage(enlargedWidth, enlargedHeight, 1, 3, 0);
 	int p1x, p1y, p2x, p2y, p3x, p3y, p4x, p4y;
 
@@ -123,7 +123,6 @@ void ImageProcesser::shrinkImage(double modifier)
 	{
 		for (unsigned int x = 0; x < enlargedWidth; x++)
 		{
-			step = (modifier - 1) / 2;
 			p1x = (int)(x * modifier);
 			p1y = (int)(y * modifier);
 
@@ -189,9 +188,9 @@ void ImageProcesser::enlargeImage(double modifier)
 
 void ImageProcesser::horizontalFlip()
 {
-	for (unsigned int y = 0; y < height; y++)
+	for (int y = 0; y < height; y++)
 	{
-		for (unsigned int x = 0; x < width / 2; x++)
+		for (int x = 0; x < width / 2; x++)
 		{
 			swapPixelsRGBValues(x, y, width - 1 - x, y);
 		}
@@ -200,9 +199,9 @@ void ImageProcesser::horizontalFlip()
 
 void ImageProcesser::verticalFlip()
 {
-	for (unsigned int y = 0; y < height / 2; y++)
+	for (int y = 0; y < height / 2; y++)
 	{
-		for (unsigned int x = 0; x < width; x++)
+		for (int x = 0; x < width; x++)
 		{
 			swapPixelsRGBValues(x, y, x, height - 1 - y);
 		}
@@ -211,9 +210,9 @@ void ImageProcesser::verticalFlip()
 
 void ImageProcesser::diagonalFlip()
 {
-	for (unsigned int y = 0; y < height / 2; y++)
+	for (int y = 0; y < height / 2; y++)
 	{
-		for (unsigned int x = 0; x < width; x++)
+		for (int x = 0; x < width; x++)
 		{
 			swapPixelsRGBValues(x, y, width - 1 - x, height - 1 - y);
 		}
@@ -444,7 +443,7 @@ void ImageProcesser::calculateMSE()
 	// We need to divide the values by 3 as we calculated it for all 3 channels
 	mse1 /= 3;
 	mse2 /= 3;
-	cout << "The two calculated values are: " << endl << "Original image and the image with noise: " << mse1 << endl
+	cout << "The Mean Squared Error for the images is: " << endl << "Original image and the image with noise: " << mse1 << endl
 		<< "Original image and the denoised image: " << mse2 << endl;
 }
 
@@ -466,7 +465,7 @@ void ImageProcesser::calculatePMSE()
 	}
 	pmse1 = (pmse1 * factor) / pow(max, 2);
 	pmse2 = (pmse2 * factor) / pow(max, 2);
-	cout << "The two calculated values are: " << endl << "Original image and the image with noise: " << pmse1 << endl
+	cout << "The Peak Mean Squared Error for the images is: " << endl << "Original image and the image with noise: " << pmse1 << endl
 		<< "Original image and the denoised image: " << pmse2 << endl;
 }
 
@@ -487,7 +486,7 @@ void ImageProcesser::calculateSNR()
 	}
 	double snr1 = 10 * log10(numerator / denominator1);
 	double snr2 = 10 * log10(numerator / denominator2);
-	cout << "The two calculated values are: " << endl << "Original image and the image with noise: " << snr1 << "dB" << endl
+	cout << "The Signal to Noise Ratio for the images is: " << endl << "Original image and the image with noise: " << snr1 << "dB" << endl
 		<< "Original image and the denoised image: " << snr2 << "dB" << endl;
 }
 
@@ -513,10 +512,8 @@ void ImageProcesser::calculatePSNR()
 
 	double psnr1 = 10 * log10((max*max) / mse1);
 	double psnr2 = 10 * log10((max*max) / mse2);
-	cout << "The two calculated values are: " << endl << "Original image and the image with noise: " << psnr1 << "dB" << endl
+	cout << "The Peak Signal to Noise Ratio for the images is: " << endl << "Original image and the image with noise: " << psnr1 << "dB" << endl
 		<< "Original image and the denoised image: " << psnr2 << "dB" << endl;
-	cout << "Library calculated values are: " << endl << "Original image and the image with noise: " << image.PSNR(noisyImage) << "dB" << endl
-		<< "Original image and the denoised image: " << image.PSNR(denoisedImage) << "dB" << endl;
 }
 
 void ImageProcesser::calculateMD()
@@ -533,7 +530,7 @@ void ImageProcesser::calculateMD()
 			}
 		}
 	}
-	cout << "The two calculated values are: " << endl << "Original image and the image with noise: " << maxDiff1 << endl
+	cout << "The Maximum Difference for the images is: " << endl << "Original image and the image with noise: " << maxDiff1 << endl
 		<< "Original image and the denoised image: " << maxDiff2 << endl;
 }
 
@@ -635,6 +632,6 @@ void ImageProcesser::processImage()
 
 	cout << "Algorithm duration: " << duration << " seconds";
 	if (option == mse || option == pmse || option == snr || option == psnr || option == md) return;
-	image.display("Processed image preview", false);
+	//image.display("Processed image preview", false);
 	image.save("processedImage.bmp");
 };

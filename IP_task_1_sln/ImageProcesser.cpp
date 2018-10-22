@@ -530,10 +530,6 @@ void ImageProcesser::calculateMD()
 			}
 		}
 	}
-	calculateMSE();
-	calculatePMSE();
-	calculateSNR();
-	calculatePSNR();
 	cout << "The Maximum Difference for the images is: " << endl << "Original image and the image with noise: " << maxDiff1 << endl
 		<< "Original image and the denoised image: " << maxDiff2 << endl;
 }
@@ -636,6 +632,6 @@ void ImageProcesser::processImage()
 
 	cout << "Algorithm duration: " << duration << " seconds";
 	if (option == mse || option == pmse || option == snr || option == psnr || option == md) return;
-	image.display("Processed image preview", false);
+	//image.display("Processed image preview", false);
 	image.save("processedImage.bmp");
 };
