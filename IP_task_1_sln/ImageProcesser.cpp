@@ -6,7 +6,7 @@ using namespace cimg_library;
 using namespace std;
 
 ImageProcesser::ImageProcesser(std::string imageName, int option, double value, std::string noisyImageName, std::string denoisedImageName)
-	:imageName(imageName), option(option), value(value), noisyImageName(noisyImageName), denoisedImageName(denoisedImageName)
+	:Processer(imageName, option), value(value), noisyImageName(noisyImageName), denoisedImageName(denoisedImageName)
 {
 }
 
@@ -27,13 +27,13 @@ void ImageProcesser::swapPixelsRGBValues(unsigned int x_1, unsigned int y_1, uns
 	}
 }
 
-int ImageProcesser::truncate(int value)
-{
-	if (value < 0) return 0;
-	if (value > 255) return 255;
-
-	return value;
-}
+//int ImageProcesser::truncate(int value)
+//{
+//	if (value < 0) return 0;
+//	if (value > 255) return 255;
+//
+//	return value;
+//}
 
 unsigned char ImageProcesser::getMedian(unsigned char* channelValues, size_t arraySize)
 {
@@ -538,6 +538,8 @@ void ImageProcesser::calculateMD()
 
 void ImageProcesser::processImage()
 {
+	if (option > 17) return;
+
 	cimg_library::CImg<unsigned char> initialImage;
 	cimg_library::CImg<unsigned char> initialNoisyImage;
 	cimg_library::CImg<unsigned char> initialDenoisedImage;

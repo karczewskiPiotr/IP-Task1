@@ -154,12 +154,15 @@
     <ClInclude Include="ArgumentsHandler.h" />
     <ClInclude Include="CImg.h" />
     <ClInclude Include="Error.h" />
+    <ClInclude Include="HistogramProcesser.h" />
     <ClInclude Include="ImageProcesser.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Processer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ArgumentsHandler.cpp" />
     <ClCompile Include="Error.cpp" />
+    <ClCompile Include="HistogramProcesser.cpp" />
     <ClCompile Include="ImageProcesser.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pch.cpp">
@@ -168,6 +171,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Processer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

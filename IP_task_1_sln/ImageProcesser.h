@@ -1,8 +1,9 @@
 #pragma once
-#include <string>
-#include "CImg.h"
+//#include <string>
+//#include "CImg.h"
+#include "Processer.h"
 
-class ImageProcesser
+class ImageProcesser : public Processer
 {
 private:
 	enum options
@@ -10,22 +11,22 @@ private:
 		brightness = 2, contrast, negative, hflip, vflip, dflip, shrink, enlarge, min, max, median, mse, pmse, snr, psnr, md
 	};
 
-	std::string imageName;
+	//std::string imageName;
 	std::string noisyImageName;
 	std::string denoisedImageName;
 
-	int option;
+	//int option;
 	double value;
 
-	cimg_library::CImg<unsigned char> image;
+	//cimg_library::CImg<unsigned char> image;
 	cimg_library::CImg<unsigned char> noisyImage;
 	cimg_library::CImg<unsigned char> denoisedImage;
-	unsigned short int height;
-	unsigned short int width;
+	//unsigned short int height;
+	//unsigned short int width;
 
 	void swapPixelsRGBValues(unsigned int x_1, unsigned int y_1, unsigned int x_2, unsigned int y_2);
 
-	int truncate(int value);
+	//int truncate(int value);
 	unsigned char getMedian(unsigned char* channelValues, size_t arraySize);
 	unsigned char getMin(unsigned char* channelValues, size_t arraySize);
 	unsigned char getMax(unsigned char* channelValues, size_t arraySize);

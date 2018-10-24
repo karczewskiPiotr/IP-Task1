@@ -16,7 +16,7 @@ ArgumentsHandler::~ArgumentsHandler()
 
 int ArgumentsHandler::convertToInt(std::string option)
 {
-	for (int i = 0; i < 17; i++)
+	for (int i = 0; i < 26; i++)
 	{
 		if (options[i] == option) return i + 1;
 	}
@@ -170,7 +170,7 @@ void ArgumentsHandler::validateArguments()
 	case 3:
 		imageName = argv[1];
 		option = argv[2];
-
+		
 		try
 		{
 			if (optionIsValid(option) && option != "--help")

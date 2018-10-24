@@ -13,7 +13,12 @@ private:
 	std::string noisyImageName;
 	std::string denoisedImageName;
 
-	std::string options[17] {  "--help", "--brightness", "--contrast", "--negative", "--hflip", "--vflip", "--dflip", "--shrink", "--enlarge", "--min", "--max", "--median", "--mse", "--pmse", "--snr", "--psnr", "--md" };
+	std::string options[26] { 
+	//Task 1 options (17 options) <0, 16>
+	"--help", "--brightness", "--contrast", "--negative", "--hflip", "--vflip", "--dflip", "--shrink", "--enlarge", "--min", "--max", "--median", "--mse", "--pmse", "--snr", "--psnr", "--md",
+	//Task 2 options (9 options) <17, 25>
+	"--hpower", "--cmean", "--cvariance", "--cvarcoi", "--casyco", "--cvarcoii", "--centropy", "--sedgesharp", "--orosenfeld"
+	};
 
 	bool optionIsValid(std::string option);
 	bool optionRequiresValue(std::string option);
