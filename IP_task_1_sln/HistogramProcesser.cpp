@@ -71,4 +71,6 @@ void HistogramProcesser::makeHistogram()
 	default:
 		break;
 	}
+
+	image.save("histogram.bmp");
 }
