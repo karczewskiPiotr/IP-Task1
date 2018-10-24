@@ -35,5 +35,5 @@ public:
 	std::string get_noisyImageName() const;
 	std::string get_denoisedImageName() const;
 	std::string get_option() const;
-	double get_value() const;
+	unsigned int get_value() const;
 };

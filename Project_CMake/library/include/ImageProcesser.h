@@ -15,7 +15,7 @@ private:
 	std::string denoisedImageName;
 
 	int option;
-	double value;
+	int value;
 
 	cimg_library::CImg<unsigned char> image;
 	cimg_library::CImg<unsigned char> noisyImage;
@@ -50,7 +50,7 @@ private:
 	void calculateMD();
 
 public:
-	ImageProcesser(std::string imageName, int option, double value, std::string noisyImageName, std::string denoisedImageName);
+	ImageProcesser(std::string imageName, int option, int value, std::string noisyImageName, std::string denoisedImageName);
 	~ImageProcesser();
 
 	void processImage();
