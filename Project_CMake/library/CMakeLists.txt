@@ -9,6 +9,10 @@ set(SOURCE_FILES
     src/ArgumentsHandler.cpp
     src/Error.cpp
     src/ImageProcesser.cpp
+    src/BasicImageTransformations.cpp
+    src/HelperMethods.cpp
+    src/ImageAnalyzers.cpp
+    src/ImageFilters.cpp
 )
 
 add_library(Library ${SOURCE_FILES})
